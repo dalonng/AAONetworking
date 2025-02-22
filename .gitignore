@@ -1,0 +1,14 @@
+# Build artifacts produced by Swift Package Manager
+.build/
+
+# Xcode files (if applicable)
+*.xcworkspace
+*.xcodeproj/
+DerivedData/
+!*.xcodeproj/project.pbxproj  # Keep project file for version control
+*.xcuserdata/
+*.xccheckout/
+
+# macOS system files
+.DS_Store
+.swiftpm/
