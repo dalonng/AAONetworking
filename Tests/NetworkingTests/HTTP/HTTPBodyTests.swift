@@ -1,6 +1,6 @@
 import XCTest
 
-@testable import EZNetworking
+@testable import AAONetworking
 
 class HTTPBodyTests: XCTestCase {
 

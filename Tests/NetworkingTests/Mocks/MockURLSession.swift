@@ -1,7 +1,7 @@
-import EZNetworking
+import AAONetworking
 import Foundation
 
-class MockURLSession: URLSessionTaskProtocol {
+final class MockURLSession: URLSessionTaskProtocol {
   var url: URL?
   var data: Data?
   var urlResponse: URLResponse?
@@ -30,21 +30,21 @@ class MockURLSession: URLSessionTaskProtocol {
   }
 
   func dataTask(with request: URLRequest, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> URLSessionDataTask {
-    self.completion = completionHandler
+    completion = completionHandler
     return MockURLSessionDataTask {
       completionHandler(self.data, self.urlResponse, self.error)
     }
   }
 
   func dataTask(with url: URL, completionHandler: @escaping @Sendable (Data?, URLResponse?, Error?) -> Void) -> URLSessionDataTask {
-    self.completion = completionHandler
+    completion = completionHandler
     return MockURLSessionDataTask {
       completionHandler(self.data, self.urlResponse, self.error)
     }
   }
 
-  func data(for request: URLRequest, delegate: (URLSessionTaskDelegate)? = nil) async throws -> (Data, URLResponse) {
-    if let error = error {
+  func data(for request: URLRequest, delegate: URLSessionTaskDelegate? = nil) async throws -> (Data, URLResponse) {
+    if let error {
       throw error
     }
 
@@ -54,8 +54,8 @@ class MockURLSession: URLSessionTaskProtocol {
     return (data, urlResponse)
   }
 
-  func data(from url: URL, delegate: (URLSessionTaskDelegate)?) async throws -> (Data, URLResponse) {
-    if let error = error {
+  func data(from url: URL, delegate: URLSessionTaskDelegate?) async throws -> (Data, URLResponse) {
+    if let error {
       throw error
     }
     self.url = url
@@ -67,14 +67,13 @@ class MockURLSession: URLSessionTaskProtocol {
   }
 
   func downloadTask(with url: URL, completionHandler: @escaping @Sendable (URL?, URLResponse?, Error?) -> Void) -> URLSessionDownloadTask {
-
-    return MockURLSessionDownloadTask {
+    MockURLSessionDownloadTask {
       completionHandler(URL(fileURLWithPath: "/tmp/test.pdf"), self.urlResponse, self.error)
     }
   }
 
-  func download(from url: URL, delegate: (URLSessionTaskDelegate)?) async throws -> (URL, URLResponse) {
-    if let error = error {
+  func download(from url: URL, delegate: URLSessionTaskDelegate?) async throws -> (URL, URLResponse) {
+    if let error {
       throw error
     }
     guard let urlResponse else {
@@ -117,3 +116,5 @@ class MockURLSessionDownloadTask: URLSessionDownloadTask {
     didCancel = true
   }
 }
+
+extension MockURLSession: @unchecked Sendable {}

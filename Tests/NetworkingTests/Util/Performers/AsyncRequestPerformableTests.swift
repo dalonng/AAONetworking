@@ -1,9 +1,8 @@
 import XCTest
 
-@testable import EZNetworking
+@testable import AAONetworking
 
 final class AsyncRequestPerformableTests: XCTestCase {
-
   // MARK: Unit test for perform request with Async Await and Request protocol and return Decodable
 
   func test_PerformAsync_Success() async throws {
@@ -17,7 +16,7 @@ final class AsyncRequestPerformableTests: XCTestCase {
     let sut = createAsyncRequestPerformer(
       urlSession: createMockURLSession(statusCode: 300)
     )
-    await XCTAssertThrowsErrorAsync(try await sut.perform(request: MockRequest(), decodeTo: Person.self)) { error in
+    try await assertThrowsErrorAsync(await sut.perform(request: MockRequest(), decodeTo: Person.self)) { error in
       XCTAssertEqual(error as! NetworkingError, NetworkingError.redirect(.multipleChoices, [:]))
     }
   }
@@ -26,7 +25,7 @@ final class AsyncRequestPerformableTests: XCTestCase {
     let sut = createAsyncRequestPerformer(
       urlSession: createMockURLSession(statusCode: 400)
     )
-    await XCTAssertThrowsErrorAsync(try await sut.perform(request: MockRequest(), decodeTo: Person.self)) { error in
+    try await assertThrowsErrorAsync(await sut.perform(request: MockRequest(), decodeTo: Person.self)) { error in
       XCTAssertEqual(error as! NetworkingError, NetworkingError.httpClientError(.badRequest, [:]))
     }
   }
@@ -35,7 +34,7 @@ final class AsyncRequestPerformableTests: XCTestCase {
     let sut = createAsyncRequestPerformer(
       urlSession: createMockURLSession(error: NetworkingError.httpClientError(.badRequest, [:]))
     )
-    await XCTAssertThrowsErrorAsync(try await sut.perform(request: MockRequest(), decodeTo: Person.self)) { error in
+    try await assertThrowsErrorAsync(await sut.perform(request: MockRequest(), decodeTo: Person.self)) { error in
       XCTAssertEqual(error as! NetworkingError, NetworkingError.httpClientError(.badRequest, [:]))
     }
   }
@@ -44,7 +43,7 @@ final class AsyncRequestPerformableTests: XCTestCase {
     let sut = createAsyncRequestPerformer(
       urlSession: createMockURLSession(error: NetworkingError.httpClientError(.forbidden, [:]))
     )
-    await XCTAssertThrowsErrorAsync(try await sut.perform(request: MockRequest(), decodeTo: Person.self)) { error in
+    try await assertThrowsErrorAsync(await sut.perform(request: MockRequest(), decodeTo: Person.self)) { error in
       XCTAssertEqual(error as! NetworkingError, NetworkingError.httpClientError(.forbidden, [:]))
     }
   }
@@ -53,7 +52,7 @@ final class AsyncRequestPerformableTests: XCTestCase {
     let sut = createAsyncRequestPerformer(
       urlSession: createMockURLSession(error: URLError(.networkConnectionLost))
     )
-    await XCTAssertThrowsErrorAsync(try await sut.perform(request: MockRequest(), decodeTo: Person.self)) { error in
+    try await assertThrowsErrorAsync(await sut.perform(request: MockRequest(), decodeTo: Person.self)) { error in
       XCTAssertEqual(error as! NetworkingError, NetworkingError.urlError(URLError(.networkConnectionLost)))
     }
   }
@@ -62,7 +61,7 @@ final class AsyncRequestPerformableTests: XCTestCase {
     let sut = createAsyncRequestPerformer(
       urlSession: createMockURLSession(data: invalidMockPersonJsonData)
     )
-    await XCTAssertThrowsErrorAsync(try await sut.perform(request: MockRequest(), decodeTo: Person.self)) { error in
+    try await assertThrowsErrorAsync(await sut.perform(request: MockRequest(), decodeTo: Person.self)) { error in
       XCTAssertEqual(error as! NetworkingError, NetworkingError.internalError(.couldNotParse))
     }
   }
@@ -71,7 +70,7 @@ final class AsyncRequestPerformableTests: XCTestCase {
     let sut = createAsyncRequestPerformer(
       urlSession: createMockURLSession(data: nil)
     )
-    await XCTAssertThrowsErrorAsync(try await sut.perform(request: MockRequest(), decodeTo: Person.self)) { error in
+    try await assertThrowsErrorAsync(await sut.perform(request: MockRequest(), decodeTo: Person.self)) { error in
       XCTAssertEqual(error as! NetworkingError, NetworkingError.internalError(.unknown))
     }
   }
@@ -80,14 +79,14 @@ final class AsyncRequestPerformableTests: XCTestCase {
 
   func test_PerformAsync_WithoutResponse_Success() async throws {
     let sut = createAsyncRequestPerformer()
-    await XCTAssertNoThrowAsync(try await sut.perform(request: MockRequest()))
+    try await assertNoThrowAsync(await sut.perform(request: MockRequest()))
   }
 
   func test_PerformAsync_WithoutResponse_WhenStatusCode300_Success() async throws {
     let sut = createAsyncRequestPerformer(
       urlSession: createMockURLSession(statusCode: 300)
     )
-    await XCTAssertThrowsErrorAsync(try await sut.perform(request: MockRequest())) { error in
+    try await assertThrowsErrorAsync(await sut.perform(request: MockRequest())) { error in
       XCTAssertEqual(error as! NetworkingError, NetworkingError.redirect(.multipleChoices, [:]))
     }
   }
@@ -96,7 +95,7 @@ final class AsyncRequestPerformableTests: XCTestCase {
     let sut = createAsyncRequestPerformer(
       urlSession: createMockURLSession(statusCode: 400)
     )
-    await XCTAssertThrowsErrorAsync(try await sut.perform(request: MockRequest())) { error in
+    try await assertThrowsErrorAsync(await sut.perform(request: MockRequest())) { error in
       XCTAssertEqual(error as! NetworkingError, NetworkingError.httpClientError(.badRequest, [:]))
     }
   }
@@ -105,7 +104,7 @@ final class AsyncRequestPerformableTests: XCTestCase {
     let sut = createAsyncRequestPerformer(
       urlSession: createMockURLSession(error: NetworkingError.httpClientError(.badRequest, [:]))
     )
-    await XCTAssertThrowsErrorAsync(try await sut.perform(request: MockRequest())) { error in
+    try await assertThrowsErrorAsync(await sut.perform(request: MockRequest())) { error in
       XCTAssertEqual(error as! NetworkingError, NetworkingError.httpClientError(.badRequest, [:]))
     }
   }
@@ -114,7 +113,7 @@ final class AsyncRequestPerformableTests: XCTestCase {
     let sut = createAsyncRequestPerformer(
       urlSession: createMockURLSession(error: NetworkingError.httpClientError(.forbidden, [:]))
     )
-    await XCTAssertThrowsErrorAsync(try await sut.perform(request: MockRequest())) { error in
+    try await assertThrowsErrorAsync(await sut.perform(request: MockRequest())) { error in
       XCTAssertEqual(error as! NetworkingError, NetworkingError.httpClientError(.forbidden, [:]))
     }
   }
@@ -123,7 +122,7 @@ final class AsyncRequestPerformableTests: XCTestCase {
     let sut = createAsyncRequestPerformer(
       urlSession: createMockURLSession(error: URLError(.networkConnectionLost))
     )
-    await XCTAssertThrowsErrorAsync(try await sut.perform(request: MockRequest())) { error in
+    try await assertThrowsErrorAsync(await sut.perform(request: MockRequest())) { error in
       XCTAssertEqual(error as! NetworkingError, NetworkingError.urlError(URLError(.networkConnectionLost)))
     }
   }
@@ -139,7 +138,7 @@ final class AsyncRequestPerformableTests: XCTestCase {
     let sut = createAsyncRequestPerformer(
       urlSession: createMockURLSession(data: nil)
     )
-    await XCTAssertThrowsErrorAsync(try await sut.perform(request: MockRequest())) { error in
+    try await assertThrowsErrorAsync(await sut.perform(request: MockRequest())) { error in
       XCTAssertEqual(error as! NetworkingError, NetworkingError.internalError(.unknown))
     }
   }
@@ -150,7 +149,7 @@ private func createAsyncRequestPerformer(
   validator: ResponseValidator = ResponseValidatorImpl(),
   requestDecoder: RequestDecodable = RequestDecoder()
 ) -> AsyncRequestPerformer {
-  return AsyncRequestPerformer(urlSession: urlSession, validator: validator, requestDecoder: requestDecoder)
+  AsyncRequestPerformer(urlSession: urlSession, validator: validator, requestDecoder: requestDecoder)
 }
 
 private func createMockURLSession(
@@ -158,7 +157,7 @@ private func createMockURLSession(
   statusCode: Int = 200,
   error: Error? = nil
 ) -> MockURLSession {
-  return MockURLSession(
+  MockURLSession(
     data: data,
     urlResponse: buildResponse(statusCode: statusCode),
     error: error
@@ -170,7 +169,8 @@ private func buildResponse(statusCode: Int) -> HTTPURLResponse {
     url: URL(string: "https://example.com")!,
     statusCode: statusCode,
     httpVersion: nil,
-    headerFields: nil)!
+    headerFields: nil
+  )!
 }
 
 private struct MockRequest: Request {

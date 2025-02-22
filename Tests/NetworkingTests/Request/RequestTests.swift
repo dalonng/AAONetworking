@@ -1,6 +1,6 @@
 import XCTest
 
-@testable import EZNetworking
+@testable import AAONetworking
 
 final class RequestTests: XCTestCase {
 
@@ -93,7 +93,7 @@ private struct MockRequest: Request {
     ]
   }
 
-  var body: EZNetworking.HTTPBody? {
+  var body: AAONetworking.HTTPBody? {
     .jsonString("{\"name\": \"John\"}")
   }
 

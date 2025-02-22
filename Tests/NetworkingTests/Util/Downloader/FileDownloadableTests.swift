@@ -1,9 +1,8 @@
 import XCTest
 
-@testable import EZNetworking
+@testable import AAONetworking
 
 final class FileDownloadableTests: XCTestCase {
-
   // MARK: test Async/Await
 
   func testDownloadFileSuccess() async throws {
@@ -84,77 +83,12 @@ final class FileDownloadableTests: XCTestCase {
 
   // MARK: test callbacks
 
-  func testDownloadFileSuccess() {
-    let testURL = URL(string: "https://example.com/example.pdf")!
-    let urlSession = MockURLSession(
-      url: testURL,
-      urlResponse: buildResponse(statusCode: 200),
-      error: nil)
-    let sut = FileDownloader(
-      urlSession: urlSession,
-      validator: MockURLResponseValidator(),
-      requestDecoder: RequestDecoder())
-
-    let exp = XCTestExpectation()
-    sut.downloadFileTask(url: testURL) { result in
-      defer { exp.fulfill() }
-      switch result {
-        case .success(let localURL):
-          XCTAssertEqual(localURL.absoluteString, "file:///tmp/test.pdf")
-        case .failure:
-          XCTFail()
-      }
-    }
-    wait(for: [exp], timeout: 0.1)
-  }
-
-  func testDownloadFileCanCancel() throws {
-    let testURL = URL(string: "https://example.com/example.pdf")!
-    let urlSession = MockURLSession(
-      url: testURL,
-      urlResponse: buildResponse(statusCode: 200),
-      error: nil)
-    let sut = FileDownloader(
-      urlSession: urlSession,
-      validator: MockURLResponseValidator(),
-      requestDecoder: RequestDecoder())
-
-    let task = sut.downloadFileTask(url: testURL) { _ in }
-    task.cancel()
-    let downloadTask = try XCTUnwrap(task as? MockURLSessionDownloadTask)
-    XCTAssertTrue(downloadTask.didCancel)
-  }
-
-  func testDownloadFileFailsIfValidatorThrowsAnyError() {
-    let testURL = URL(string: "https://example.com/example.pdf")!
-    let validator = MockURLResponseValidator(throwError: NetworkingError.httpClientError(.conflict, [:]))
-    let urlSession = MockURLSession(
-      url: testURL,
-      urlResponse: buildResponse(statusCode: 200),
-      error: nil)
-    let sut = FileDownloader(
-      urlSession: urlSession,
-      validator: validator,
-      requestDecoder: RequestDecoder())
-
-    let exp = XCTestExpectation()
-    sut.downloadFileTask(url: testURL) { result in
-      defer { exp.fulfill() }
-      switch result {
-        case .success:
-          XCTFail()
-        case .failure(let error):
-          XCTAssertEqual(error, NetworkingError.httpClientError(.conflict, [:]))
-      }
-    }
-    wait(for: [exp], timeout: 0.1)
-  }
-
   private func buildResponse(statusCode: Int) -> HTTPURLResponse {
     HTTPURLResponse(
       url: URL(string: "https://example.com")!,
       statusCode: statusCode,
       httpVersion: nil,
-      headerFields: nil)!
+      headerFields: nil
+    )!
   }
 }

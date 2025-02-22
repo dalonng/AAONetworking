@@ -1,6 +1,6 @@
 import XCTest
 
-@testable import EZNetworking
+@testable import AAONetworking
 
 final class HTTPInformationalStatusTests: XCTestCase {
   func testStatusCode100IsContinueStatus() {
