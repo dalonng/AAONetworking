@@ -1,4 +1,7 @@
 import Foundation
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
 
 public protocol HTTPParameterEncoder {
   func encodeParameters(for urlRequest: inout URLRequest, with parameters: [HTTPParameter]) throws
