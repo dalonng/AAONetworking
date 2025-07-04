@@ -1,4 +1,7 @@
 import Foundation
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
 
 public protocol RequestBuilder {
   func setHttpMethod(_ method: HTTPMethod) -> RequestBuilder

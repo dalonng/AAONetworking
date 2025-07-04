@@ -1,4 +1,7 @@
 import Foundation
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
 
 public protocol FileDownloadable {
   func downloadFile(with url: URL) async throws -> URL

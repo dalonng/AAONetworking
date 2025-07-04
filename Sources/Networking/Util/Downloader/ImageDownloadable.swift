@@ -1,4 +1,7 @@
 import Foundation
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
 
 #if canImport(UIKit)
   import UIKit
@@ -8,6 +11,8 @@ import Foundation
   import AppKit
 
   public typealias PlatformImage = NSImage
+#else
+  public typealias PlatformImage = Data
 #endif
 
 public protocol ImageDownloadable {
@@ -48,9 +53,13 @@ public struct ImageDownloader: ImageDownloadable, Sendable {
   }
 
   private func getImage(from data: Data) throws -> PlatformImage {
+    #if canImport(UIKit) || canImport(AppKit)
     guard let image = PlatformImage(data: data) else {
       throw NetworkingError.internalError(.invalidImageData)
     }
     return image
+    #else
+    return data
+    #endif
   }
 }

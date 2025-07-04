@@ -1,13 +1,21 @@
 import XCTest
-
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
 @testable import AAONetworking
 
 final class ImageDownloadableTests: XCTestCase {
   // MARK: test Async/Await
 
-  func testDownloadImageSuccess() async throws { // note: this is an async test as it actually decodes url to generate the image
-    let testURL = URL(string: "https://i.natgeofe.com/n/4f5aaece-3300-41a4-b2a8-ed2708a0a27c/domestic-dog_thumb_square.jpg")!
-    let sut = ImageDownloader()
+  func testDownloadImageSuccess() async throws {
+    let testURL = URL(string: "https://example.com/image.png")!
+    let urlSession = MockURLSession(
+      data: mockImageData,
+      url: testURL,
+      urlResponse: buildResponse(statusCode: 200),
+      error: nil
+    )
+    let sut = ImageDownloader(urlSession: urlSession)
     do {
       _ = try await sut.downloadImage(from: testURL)
       XCTAssertTrue(true)

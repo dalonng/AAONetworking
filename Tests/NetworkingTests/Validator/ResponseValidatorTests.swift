@@ -1,5 +1,7 @@
 import XCTest
-
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
 @testable import AAONetworking
 
 final class URLResponseValidatorTests: XCTestCase {
@@ -59,7 +61,13 @@ final class URLResponseValidatorTests: XCTestCase {
   }
 
   func test_validateStatus_givenURLResponse_Throws() throws {
-    XCTAssertThrowsError(try sut.validateStatus(from: URLResponse())) { error in
+    let urlResponse = URLResponse(
+      url: URL(string: "https://example.com")!,
+      mimeType: nil,
+      expectedContentLength: 0,
+      textEncodingName: nil
+    )
+    XCTAssertThrowsError(try sut.validateStatus(from: urlResponse)) { error in
       XCTAssertEqual(error as? NetworkingError, NetworkingError.internalError(.noHTTPURLResponse))
     }
   }
